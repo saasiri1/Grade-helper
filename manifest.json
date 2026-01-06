@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Grade Checker",
+  "version": "1.0",
+  "description": "Check final, total, grade, and status in students table",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://registration.kku.edu.sa/kku/ui/staff/sections/index/sectionsIndex.faces"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

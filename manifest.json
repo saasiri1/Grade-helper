@@ -1,8 +1,8 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 4,
   "name": "Grade Checker",
-  "version": "1.0",
-  "description": "Check final, total, grade, and status in students table",
+  "version": "1.2",
+  "description": "Check final, total, grade, and status in students table, highlight failed students.",
   "content_scripts": [
     {
       "matches": [

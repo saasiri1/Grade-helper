@@ -44,6 +44,7 @@
   const STORAGE_KEY = "gradeHighlighterSettings_v1";
   const defaultSettings = {
     borderline: true,
+    is59: true,
     borderlineF1: true,
     between55and58: true,
     between50and54: true,
@@ -93,16 +94,17 @@
   title.style.marginBottom = "6px";
   panel.appendChild(title);
 
-  const items = [
-    ["borderline", "Borderline totals (4,9)"],
-    ["borderlineF1", "Borderline  totals (3,8)"],
-    ["between55and58", "Total 55–59"],
-    ["between50and54", "Total 50–54"],
-    ["incompleteOrContinue", "Incomplete / Continuing"],
-    ["finalZero", "Final = 0 (not absent)"],
-    ["distH", "Distribution: هـ > 10%"],
-    ["distMax", "Distribution: highest grade"],
-  ];
+const items = [
+  ["borderline", "Borderline totals (4,9)"],
+  ["borderlineF1", "Borderline totals (3,8)"],
+  ["is59", "Total = 59 (separate)"],     // ✅ add this
+  ["between55and58", "Total 55–58"],
+  ["between50and54", "Total 50–54"],
+  ["incompleteOrContinue", "Incomplete / Continuing"],
+  ["finalZero", "Final = 0 (not absent)"],
+  ["distH", "Distribution: هـ > 10%"],
+  ["distMax", "Distribution: highest grade"],
+];
 
   items.forEach(([key, label]) => {
     const row = document.createElement("label");
@@ -138,35 +140,42 @@
   legendTitle.style.marginBottom = "4px";
   panel.appendChild(legendTitle);
 
-  const legendItems = [
-    ["Borderline total (4,9)", "rgba(220,20,60,0.9)"],
-    ["Borderline (3,8)", "rgba(111,66,193,0.9)"],
-    ["Total between 55 and 59", "rgba(13,110,253,0.9)"],
-    ["Total between 50 and 54", "rgba(253,126,20,0.9)"],
-    ["Incomplete or continuing", "rgba(121,85,72,0.9)"],
-    ["Final grade = 0 and is not Absent", "rgba(32,201,151,0.9)"],
-  ];
+const legendMap = [
+  ["borderline", "Borderline totals (4,9)"],
+  ["borderlineF1", "Borderline totals (3,8)"],
+  ["is59", "Total = 59 (separate)"],
+  ["between55and58", "Total 55–58"],
+  ["between50and54", "Total 50–54"],
+  ["incompleteOrContinue", "Incomplete / Continuing"],
+  ["finalZero", "Final = 0 (not absent)"],
+];
 
-  legendItems.forEach(([text, color]) => {
-    const row = document.createElement("div");
-    row.style.display = "flex";
-    row.style.alignItems = "center";
-    row.style.gap = "6px";
-    row.style.marginBottom = "3px";
 
-    const dot = document.createElement("span");
-    dot.style.width = "10px";
-    dot.style.height = "10px";
-    dot.style.borderRadius = "50%";
-    dot.style.background = color;
+legendMap.forEach(([key, text]) => {
+  const style = rowStyles[key];
+  if (!style) return;
 
-    const label = document.createElement("span");
-    label.textContent = text;
+  const row = document.createElement("div");
+  row.style.display = "flex";
+  row.style.alignItems = "center";
+  row.style.gap = "6px";
+  row.style.marginBottom = "3px";
 
-    row.appendChild(dot);
-    row.appendChild(label);
-    panel.appendChild(row);
-  });
+  const dot = document.createElement("span");
+dot.style.width = "18px";
+dot.style.height = "8px";
+dot.style.borderRadius = "2px";
+
+  dot.style.background = style.bg;
+  dot.style.outline = `2px solid ${style.border}`;
+
+  const label = document.createElement("span");
+  label.textContent = text;
+
+  row.appendChild(dot);
+  row.appendChild(label);
+  panel.appendChild(row);
+});
 
   // ----- actions -----
   const actions = document.createElement("div");
@@ -205,10 +214,13 @@
 
   document.body.appendChild(panel);
 
-  // panel shows -> toggle hides
-  panel.style.display = "block";
-  const toggleBtn = document.getElementById("grade-highlighter-toggle");
-  if (toggleBtn) toggleBtn.style.display = "none";
+// default: panel hidden
+panel.style.display = "none";
+
+// default: toggle visible
+const toggleBtn = document.getElementById("grade-highlighter-toggle");
+if (toggleBtn) toggleBtn.style.display = "block";
+
 }
 
 
@@ -292,9 +304,9 @@ const rowStyles = {
       // priority order
       const matched = [];
       if (isBorderline && settings.borderline) matched.push("borderline");
-      if (isEqual59) matched.push("is59");
+      if (isEqual59 && settings.is59) matched.push("is59");
       if (isBorderlineF1 && settings.borderlineF1) matched.push("borderlineF1");
-      if (isBetween55and58 && settings.between55and59) matched.push("between55and58");
+      if (isBetween55and58 && settings.between55and58) matched.push("between55and58");
       if (isBetween50and54 && settings.between50and54) matched.push("between50and54");
       if ((statusIsIncomplete || statusIsContinue) && settings.incompleteOrContinue)
         matched.push("incompleteOrContinue");
@@ -393,12 +405,13 @@ function createToggleButton() {
 }
 
 
-  function runAll() {
-    createControlPanel();
-    checkStudentsTable();
-    checkDistributionTable();
-    createToggleButton();
-  }
+function runAll() {
+  createToggleButton();   
+  createControlPanel();  
+  checkStudentsTable();
+  checkDistributionTable();
+}
+
 
   runAll();
 

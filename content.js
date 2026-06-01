@@ -392,27 +392,31 @@
   };
 
   // fail boundary
-  const failInpWrap = document.createElement("div");
-  failInpWrap.appendChild(makeNumberInput(settings.failBoundary, 0, 100, (v) => {
+  const failInp = makeNumberInput(settings.failBoundary, 0, 100, (v) => {
     settings.failBoundary = v; saveSettings(settings); runAll();
-  }));
-  advBody.appendChild(makeAdvRow("Fail boundary:", failInpWrap.firstChild));
+  });
+  failInp.dataset.setting = "failBoundary";
+  advBody.appendChild(makeAdvRow("Fail boundary:", failInp));
 
   // at risk high range
   const risk1Wrap = document.createElement("div");
   risk1Wrap.style.display = "flex";
   risk1Wrap.style.alignItems = "center";
   risk1Wrap.style.gap = "4px";
-  risk1Wrap.appendChild(makeNumberInput(settings.atRisk1Min, 0, 100, (v) => {
+  const risk1Min = makeNumberInput(settings.atRisk1Min, 0, 100, (v) => {
     settings.atRisk1Min = v; saveSettings(settings); runAll();
-  }));
+  });
+  risk1Min.dataset.setting = "atRisk1Min";
   const dash1 = document.createElement("span");
   dash1.textContent = "–";
   dash1.style.fontSize = "12px";
-  risk1Wrap.appendChild(dash1);
-  risk1Wrap.appendChild(makeNumberInput(settings.atRisk1Max, 0, 100, (v) => {
+  const risk1Max = makeNumberInput(settings.atRisk1Max, 0, 100, (v) => {
     settings.atRisk1Max = v; saveSettings(settings); runAll();
-  }));
+  });
+  risk1Max.dataset.setting = "atRisk1Max";
+  risk1Wrap.appendChild(risk1Min);
+  risk1Wrap.appendChild(dash1);
+  risk1Wrap.appendChild(risk1Max);
   advBody.appendChild(makeAdvRow("At risk (high):", risk1Wrap));
 
   // at risk low range
@@ -420,16 +424,20 @@
   risk2Wrap.style.display = "flex";
   risk2Wrap.style.alignItems = "center";
   risk2Wrap.style.gap = "4px";
-  risk2Wrap.appendChild(makeNumberInput(settings.atRisk2Min, 0, 100, (v) => {
+  const risk2Min = makeNumberInput(settings.atRisk2Min, 0, 100, (v) => {
     settings.atRisk2Min = v; saveSettings(settings); runAll();
-  }));
+  });
+  risk2Min.dataset.setting = "atRisk2Min";
   const dash2 = document.createElement("span");
   dash2.textContent = "–";
   dash2.style.fontSize = "12px";
-  risk2Wrap.appendChild(dash2);
-  risk2Wrap.appendChild(makeNumberInput(settings.atRisk2Max, 0, 100, (v) => {
+  const risk2Max = makeNumberInput(settings.atRisk2Max, 0, 100, (v) => {
     settings.atRisk2Max = v; saveSettings(settings); runAll();
-  }));
+  });
+  risk2Max.dataset.setting = "atRisk2Max";
+  risk2Wrap.appendChild(risk2Min);
+  risk2Wrap.appendChild(dash2);
+  risk2Wrap.appendChild(risk2Max);
   advBody.appendChild(makeAdvRow("At risk (low):", risk2Wrap));
 
   panel.appendChild(advBody);
@@ -458,6 +466,10 @@
     saveSettings(settings);
     panel.querySelectorAll("input[type=checkbox]").forEach((el) => {
       el.checked = !!settings[el.dataset.key];
+    });
+    // restore number inputs to default values
+    panel.querySelectorAll("input[type=number][data-setting]").forEach((el) => {
+      el.value = defaultSettings[el.dataset.setting] ?? el.value;
     });
     allSelected = true;
     selectAllBtn.textContent = "Select all";

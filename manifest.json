@@ -3,6 +3,7 @@
   "name": "Grade Checker",
   "version": "2.2",
   "description": "Check final, total, grade, and status in students table, highlight failed students.",
+  "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": [

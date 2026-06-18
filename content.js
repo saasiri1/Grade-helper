@@ -59,20 +59,9 @@
     atRisk2Max: 54,
   };
 
-  const loadSettings = () => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return { ...defaultSettings };
-      const parsed = JSON.parse(raw);
-      return { ...defaultSettings, ...parsed };
-    } catch {
-      return { ...defaultSettings };
-    }
-  };
+  const saveSettings = (s) => chrome.storage.local.set({ [STORAGE_KEY]: s });
 
-  const saveSettings = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
-
-  let settings = loadSettings();
+  let settings = { ...defaultSettings };
 
   // ---------- count badges (populated by checkStudentsTable) ----------
   const ruleCounts = {};
@@ -728,7 +717,12 @@ function runAll() {
 }
 
 
-  runAll();
+  chrome.storage.local.get(STORAGE_KEY, (result) => {
+    if (result[STORAGE_KEY]) {
+      settings = { ...defaultSettings, ...result[STORAGE_KEY] };
+    }
+    runAll();
+  });
 
   const observer = new MutationObserver(() => {
     clearTimeout(window.__gradeCheckerTimer);
